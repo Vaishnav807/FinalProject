@@ -1,8 +1,14 @@
-const cells = document.querySelectorAll(".cell");
-const statusText = document.querySelector("#statusText");
-const restartBtn = document.querySelector("#restartBtn");
+//Learned how to code the tic tac toe game from watching a YouTube video
+//https://youtu.be/AnmwHjpEhtA
 
-const winConditions = [
+//had some trouble and didn't really understand the concept of checking the winner of the game function (line 62)
+//so I asked chatGPT and understood it.
+
+const boxes = document.querySelectorAll(".box");
+const message = document.querySelector("#message");
+const resetBtn = document.querySelector("#resetBtn");
+
+const winCombos = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -17,52 +23,56 @@ let options = ["", "", "", "", "", "", "", "", ""];
 
 let currentPlayer = "X";
 
-let running = false;
+let gameActive = false;
 
-initializeGame();
+startGame();
 
-function initializeGame(){
-    cells.forEach(cell => cell.addEventListener("click", cellClicked));
-    restartBtn.addEventListener("click", restartGame);
-    statusText.textContent = `${currentPlayer}'s turn`;
-    running = true;
+function startGame(){
+    boxes.forEach(box => box.addEventListener("click", cellClicked));
+    resetBtn.addEventListener("click", restartGame);
+    message.textContent = `${currentPlayer}'s turn`;
+    gameActive = true;
 }
+
 function cellClicked(){
-    const cellIndex = this.getAttribute("cellIndex");
+    const boxIndex = this.getAttribute("boxIndex");
     
-    if(options[cellIndex] != "" || !running){
+    if(options[boxIndex] != "" || !gameActive){
         return;
     }
 
-    updateCell(this, cellIndex);
+    updateCell(this, boxIndex);
     checkWinner();
 }
-function updateCell(cell, index){
+
+function updateCell(box, index){
     options[index] = currentPlayer;
-    cell.textContent = currentPlayer;
+    box.textContent = currentPlayer;
 
 }
+
 function changePlayer(){
     if(currentPlayer == "X"){
         currentPlayer = "O";
     } else {
         currentPlayer = "X";
     }
-    statusText.textContent = `${currentPlayer}'s turn`;
+    message.textContent = `${currentPlayer}'s turn`;
 }
+
 function checkWinner(){
     let roundWon = false;
 
-    for(let i = 0; i < winConditions.length; i++){
-        const condition = winConditions[i];
-        const cellA = options[condition[0]];
-        const cellB = options[condition[1]];
-        const cellC = options[condition[2]];
+    for(let i = 0; i < winCombos.length; i++){
+        const condition = winCombos[i];
+        const boxA = options[condition[0]];
+        const boxB = options[condition[1]];
+        const boxC = options[condition[2]];
 
-        if(cellA == "" || cellB == "" || cellC == ""){
+        if(boxA == "" || boxB == "" || boxC == ""){
             continue;
         }
-        if(cellA == cellB && cellB == cellC){
+        if(boxA == boxB && boxB == boxC){
             roundWon = true;
             break;
         }
@@ -70,10 +80,10 @@ function checkWinner(){
     }
 
     if(roundWon){
-        statusText.textContent = `${currentPlayer} wins!`;
-        running = false;
+        message.textContent = `${currentPlayer} wins!`;
+        gameActive = false;
     } else if(!options.includes("")){
-        statusText.textContent = `Draw!`;
+        message.textContent = `Draw!`;
     } else {
         changePlayer();
     }
@@ -82,7 +92,7 @@ function checkWinner(){
 function restartGame(){
     currentPlayer = "X";
     options = ["", "", "", "", "", "", "", "", ""];
-    statusText.textContent = `${currentPlayer}'s turn`;
-    cells.forEach(cell => cell.textContent = "");
-    running = true;
+    message.textContent = `${currentPlayer}'s turn`;
+    boxes.forEach(box => box.textContent = "");
+    gameActive = true;
 }
